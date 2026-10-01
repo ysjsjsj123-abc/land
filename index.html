@@ -6,38 +6,38 @@
 <title>문화 존중 땅따먹기</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
-:root{--red:#ff5b62;--green:#52c77a;--blue:#4d8cff;--yellow:#ffc83d;--ink:#253047;--cream:#fffaf0;--gray:#d9dee8;--shadow:0 7px 0 rgba(37,48,71,.12)}
+:root{--red:#f58b91;--green:#79cfa0;--blue:#86aef2;--yellow:#f4c96b;--ink:#34405a;--gray:#e7ebf1;--pastel:#fffdf8;--shadow:0 7px 0 rgba(75,86,110,.12)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--ink);background:linear-gradient(180deg,#dff6ff 0,#fff8df 100%);min-height:100vh}
+body{margin:0;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--ink);background:linear-gradient(135deg,#eaf8f5 0,#fff8e8 52%,#f9eaf3 100%);min-height:100vh}
 button,input{font:inherit}button{cursor:pointer;border:0}
 .app{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
 .brand{display:flex;align-items:center;gap:12px}.logo{font-size:42px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.08))}
 h1{margin:0;font-size:clamp(25px,4vw,40px);letter-spacing:-1px}.sub{font-size:14px;color:#667085;margin-top:3px}
-.panel{background:#fff;border-radius:24px;padding:16px;box-shadow:var(--shadow);border:3px solid #fff}
+.panel{background:rgba(255,255,255,.9);border-radius:24px;padding:16px;box-shadow:var(--shadow);border:3px solid rgba(255,255,255,.95)}
 .setup{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-bottom:14px}.setup h2{margin:0 0 8px;font-size:20px}
 .row{display:flex;gap:8px;flex-wrap:wrap}input{min-width:160px;border:2px solid #d8deea;border-radius:14px;padding:11px 13px;outline:none}
 input:focus{border-color:#7b9cff}.btn{padding:11px 16px;border-radius:14px;font-weight:800;box-shadow:0 4px 0 rgba(0,0,0,.12);transition:.12s;touch-action:manipulation}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.12)}.primary{background:#263b67;color:white}.secondary{background:#eef2f7;color:#344054}.danger{background:#ff646d;color:#fff}.success{background:#42bd72;color:#fff}
-.room{background:#f3f7ff;border-radius:16px;padding:10px 13px;margin-top:9px;font-weight:800}.room b{font-size:22px;letter-spacing:3px}
+.room{background:#f4f8ff;border-radius:16px;padding:10px 13px;margin-top:9px;font-weight:800}.room b{font-size:22px;letter-spacing:3px}
 .players{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.player-pill{padding:7px 10px;border-radius:999px;font-weight:800;background:#eef1f5}.player-pill.red{background:#ffdfe1}.player-pill.green{background:#ddf7e7}.player-pill.blue{background:#deebff}.player-pill.yellow{background:#fff0bd}
-.turnbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.turn{font-weight:900;font-size:18px}.turn small{font-weight:600;color:#667085}
+.turnbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.turn{font-weight:1000;font-size:22px;padding:10px 14px;border-radius:16px;background:#fff7d9;border:2px solid #f2d88a}.turn small{font-weight:600;color:#667085}
 .legend{display:flex;gap:6px;flex-wrap:wrap}.dot{padding:6px 9px;border-radius:999px;font-weight:800;font-size:13px}.dot.red{background:#ffdfe1}.dot.green{background:#ddf7e7}.dot.blue{background:#deebff}.dot.yellow{background:#fff0bd}
-.board{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;background:#8fd0a3;padding:12px;border-radius:24px;border:4px solid #fff;box-shadow:var(--shadow)}
+.board{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;background:#c9ead7;padding:12px;border-radius:24px;border:4px solid #fff;box-shadow:var(--shadow)}
 .cell{aspect-ratio:1.05/1;background:var(--gray);border:4px solid #c9ced8;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:clamp(24px,5vw,42px);font-weight:1000;position:relative;box-shadow:inset 0 -6px 0 rgba(0,0,0,.06);transition:.18s}
 .cell.available{cursor:pointer}.cell.available:hover{transform:translateY(-3px)}.cell.red{background:var(--red);border-color:#e8464f;color:#fff}.cell.green{background:var(--green);border-color:#36aa61;color:#fff}.cell.blue{background:var(--blue);border-color:#3474e5;color:#fff}.cell.yellow{background:var(--yellow);border-color:#efb31e;color:#5d4800}.cell.disabled{cursor:not-allowed;opacity:.82}
 .cell .mini{position:absolute;bottom:5px;right:7px;font-size:12px;background:rgba(255,255,255,.82);border-radius:10px;padding:2px 5px;color:#263047}.status{margin-top:12px;text-align:center;font-weight:800;color:#667085}
-.modal{position:fixed;inset:0;background:rgba(29,40,64,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}.modal.show{display:flex}
-.card{width:min(760px,100%);background:#fff;border-radius:30px;padding:20px;box-shadow:0 14px 0 rgba(0,0,0,.15);animation:pop .18s ease-out}
+.modal{position:fixed;inset:0;background:rgba(67,76,96,.42);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}.modal.show{display:flex}
+.card{width:min(760px,100%);background:#fffdf9;border-radius:30px;padding:20px;box-shadow:0 14px 0 rgba(0,0,0,.15);animation:pop .18s ease-out}
 @keyframes pop{from{transform:scale(.88) rotate(-1deg);opacity:.3}to{transform:scale(1);opacity:1}}
 .cardtop{display:flex;justify-content:space-between;align-items:center;gap:10px}.badge{display:inline-block;background:#fff0bd;color:#6b5000;border-radius:999px;padding:6px 11px;font-weight:900}
-.timer{font-size:clamp(34px,7vw,58px);font-weight:1000;line-height:1}.timer.warn{color:#f04444}.card h2{font-size:clamp(24px,4vw,34px);margin:15px 0 10px}
+.active-player{font-size:clamp(15px,2.5vw,20px);font-weight:1000;padding:9px 13px;border-radius:999px;background:#eef4ff;border:2px solid #c9dafc;white-space:nowrap}.timer{font-size:clamp(34px,7vw,58px);font-weight:1000;line-height:1}.timer.warn{color:#f04444}.card h2{font-size:clamp(24px,4vw,34px);margin:15px 0 10px}
 .scene{font-size:clamp(18px,3vw,24px);line-height:1.55;background:#f7f9fc;border:3px dashed #d6dce7;border-radius:20px;padding:16px}
 .friend{margin-top:12px;background:#eaf6ff;border-radius:18px;padding:14px;font-size:clamp(17px,2.8vw,22px);line-height:1.5}.question{margin-top:12px;font-weight:900;font-size:clamp(18px,3vw,23px);line-height:1.45}
-.actions{display:flex;gap:9px;justify-content:flex-end;align-items:center;margin-top:16px;flex-wrap:wrap}.speak{background:#263b67;color:#fff;font-size:17px}
+.shared-note{margin-top:12px;background:#f8f2ff;border:2px solid #e5d5ff;color:#7149a8;border-radius:14px;padding:9px 12px;font-weight:800;text-align:center}.actions{display:flex;gap:9px;justify-content:flex-end;align-items:center;margin-top:16px;flex-wrap:wrap}.speak{background:#263b67;color:#fff;font-size:17px}
 .result{display:none;margin-top:15px;padding-top:15px;border-top:2px solid #edf0f5}.result.show{display:block}.result-title{font-weight:1000;font-size:20px;margin-bottom:10px}
 .colorBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.colorBtn{padding:13px 7px;border-radius:14px;font-weight:1000;box-shadow:0 4px 0 rgba(0,0,0,.1)}
 .colorBtn.red{background:var(--red);color:#fff}.colorBtn.green{background:var(--green);color:#fff}.colorBtn.blue{background:var(--blue);color:#fff}.colorBtn.yellow{background:var(--yellow);color:#5d4800}.colorBtn:disabled{opacity:.35;cursor:not-allowed}
-.help{font-size:13px;color:#667085;margin-top:8px}.end{display:none;text-align:center;padding:24px}.end.show{display:block}.end h2{font-size:34px;margin:5px}.trophy{font-size:65px}
+.my-player-badge{margin-top:10px;padding:12px 15px;border-radius:18px;font-size:22px;font-weight:1000;text-align:center;border:3px solid #fff;box-shadow:0 4px 0 rgba(0,0,0,.08)}.my-player-badge.red{background:#ffe3e5}.my-player-badge.green{background:#e1f7ea}.my-player-badge.blue{background:#e3edff}.my-player-badge.yellow{background:#fff1c9}.help{font-size:13px;color:#667085;margin-top:8px}.end{display:none;text-align:center;padding:24px}.end.show{display:block}.end h2{font-size:34px;margin:5px}.trophy{font-size:65px}
 .score{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:15px 0}.score div{padding:12px;border-radius:16px;font-weight:900}
 @media(max-width:760px){.app{padding:10px}.setup{grid-template-columns:1fr}.board{grid-template-columns:repeat(4,1fr);gap:7px;padding:8px}.cell{border-width:3px;border-radius:13px}.top{align-items:flex-start}.logo{font-size:34px}.legend{display:none}.turnbar{align-items:flex-start;flex-direction:column}.colorBtns{grid-template-columns:repeat(2,1fr)}}
 </style>
@@ -46,13 +46,13 @@ input:focus{border-color:#7b9cff}.btn{padding:11px 16px;border-radius:14px;font-
 <div class="app">
 <header class="top"><div class="brand"><div class="logo">🌏</div><div><h1>문화 존중 땅따먹기</h1><div class="sub">서로 다름을 알고, 배려하는 말을 찾아요!</div></div></div><button class="btn secondary" id="resetBtn">🔄 새 게임</button></header>
 <section class="setup">
-<div class="panel"><h2>👥 우리 모둠 만들기</h2><div class="row"><button class="btn primary" id="hostBtn">🏠 방 만들기</button><input id="roomInput" maxlength="8" placeholder="방 코드 6자리"><button class="btn secondary" id="joinBtn">🚪 방 들어가기</button></div><div class="room" id="roomInfo">먼저 한 명이 <b>방 만들기</b>를 눌러 주세요.</div><div class="players" id="players"></div><div class="help">4명이 같은 방에 들어오면 각자의 태블릿에서 같은 게임 화면을 볼 수 있어요.</div></div>
+<div class="panel"><h2>👥 우리 모둠 만들기</h2><div class="row"><button class="btn primary" id="hostBtn">🏠 방 만들기</button><input id="roomInput" maxlength="2" inputmode="numeric" pattern="[0-9]*" placeholder="방 코드 2자리"><button class="btn secondary" id="joinBtn">🚪 방 들어가기</button></div><div class="room" id="roomInfo">먼저 한 명이 <b>방 만들기</b>를 눌러 주세요.</div><div id="myPlayerBadge" class="my-player-badge" style="display:none"></div><div class="players" id="players"></div><div class="help">4명이 같은 방에 들어오면 각자의 태블릿에서 같은 게임 화면을 볼 수 있어요.</div></div>
 <div class="panel"><h2>🎨 플레이어 색</h2><div class="players"><span class="player-pill red">1번 🔴 빨강</span><span class="player-pill green">2번 🟢 초록</span><span class="player-pill blue">3번 🔵 파랑</span><span class="player-pill yellow">4번 🟡 노랑</span></div><div class="help">차례가 된 친구가 땅 1칸을 골라 상황 카드를 읽고 대답해요. 제한 시간은 30초!</div></div>
 </section>
 <section class="panel"><div class="turnbar"><div class="turn" id="turnText">방을 만들거나 들어가면 게임이 시작됩니다.</div><div class="legend"><span class="dot red">1 빨강</span><span class="dot green">2 초록</span><span class="dot blue">3 파랑</span><span class="dot yellow">4 노랑</span></div></div><div class="board" id="board"></div><div class="status" id="status">회색 땅을 하나 골라 문화 존중 미션을 시작해 보세요!</div></section>
 <section class="panel end" id="endPanel"><div class="trophy">🏆</div><h2>12칸 모두 탐험 완료!</h2><p>우리 모둠은 서로의 문화를 존중하는 방법을 많이 배웠어요.</p><div class="score" id="score"></div><button class="btn primary" id="restartBtn">🌱 다시 시작하기</button></section>
 </div>
-<div class="modal" id="modal"><div class="card"><div class="cardtop"><span class="badge" id="category"></span><div class="timer" id="timer">30</div></div><h2 id="cardTitle"></h2><div class="scene" id="scene"></div><div class="friend" id="friend"></div><div class="question" id="question"></div><div class="actions"><button class="btn speak" id="speakBtn">🎤 발표하기</button></div>
+<div class="modal" id="modal"><div class="card"><div class="cardtop"><span class="badge" id="category"></span><div class="active-player" id="activePlayer">지금 1번 친구가 도전 중!</div><div class="timer" id="timer">30</div></div><h2 id="cardTitle"></h2><div class="scene" id="scene"></div><div class="friend" id="friend"></div><div class="question" id="question"></div><div class="shared-note" id="sharedNote">👀 모든 친구의 화면에 같은 미션이 열려 있어요!</div><div class="actions"><button class="btn speak" id="speakBtn">🎤 발표하기</button></div>
 <div class="result" id="result"><div class="result-title" id="resultTitle">발표를 들었나요? 결과를 선택해 주세요.</div><div class="row"><button class="btn success" id="successBtn">😊 성공!</button><button class="btn danger" id="failBtn">🔁 다시 생각해 보기</button></div>
 <div id="claimArea" style="display:none;margin-top:12px"><div class="result-title">🎨 성공! 이 땅을 누구의 색으로 칠할까요?</div><div class="colorBtns"><button class="colorBtn red" data-color="red">1 🔴 빨강</button><button class="colorBtn green" data-color="green">2 🟢 초록</button><button class="colorBtn blue" data-color="blue">3 🔵 파랑</button><button class="colorBtn yellow" data-color="yellow">4 🟡 노랑</button></div></div>
 <div id="failArea" style="display:none;margin-top:10px"><button class="btn primary" id="nextFailBtn">➡️ 다음 친구 차례</button></div></div></div></div>
@@ -72,7 +72,7 @@ const cards=[
 {cat:"💬 편견 없는 말",title:"궁금한 것을 물어봐도 될까?",scene:"친구의 문화가 궁금하지만 함부로 판단하거나 놀리고 싶지는 않아요.",friend:"친구: “내 문화가 궁금하면 물어봐도 괜찮아. 모르는 게 있으면 알려 줄게.”",q:"상대방을 존중하면서 궁금한 점을 묻는 대답은 어떻게 말하면 좋을까요?"}
 ];
 const colors={red:"1번 🔴 빨강",green:"2번 🟢 초록",blue:"3번 🔵 파랑",yellow:"4번 🟡 노랑"};
-let peer=null,host=false,roomCode="",myPlayer=null,connections={},state={players:{},lands:Array(12).fill(null),turn:1,selected:null,phase:"idle",remaining:30,gameNo:1},timerId=null,roomReady=false;
+let peer=null,host=false,roomCode="",myPlayer=null,connections={},state={players:{},lands:Array(12).fill(null),turn:1,selected:null,phase:"idle",remaining:30,startedAt:0,gameNo:1},timerId=null,roomReady=false;
 const $=id=>document.getElementById(id);
 function renderBoard(){
  const b=$("board");b.innerHTML="";
@@ -81,44 +81,69 @@ function renderBoard(){
  const current=state.players[state.turn];$("turnText").innerHTML=roomReady?"🎯 지금은 <b>"+(current?current.name:state.turn+"번 친구")+"</b>의 차례 <small>("+state.turn+"번 "+["","🔴","🟢","🔵","🟡"][state.turn]+")</small>":"방을 만들거나 들어가면 게임이 시작됩니다.";
  $("status").textContent=roomReady?(state.phase==="idle"?"회색 땅을 하나 골라 미션을 시작하세요!":state.phase==="question"?"상황을 읽고 30초 안에 대답해 보세요!":"결과를 선택해 주세요."):"4명이 같은 방에 들어오면 시작할 수 있어요.";
 }
-function renderPlayers(){const p=$("players");p.innerHTML="";Object.values(state.players).sort((a,b)=>a.num-b.num).forEach(x=>{const s=document.createElement("span");s.className="player-pill "+x.color;s.textContent=x.num+"번 "+x.name+(x.num===myPlayer?" (나)":"");p.appendChild(s)})}
+function renderPlayers(){const badge=$("myPlayerBadge");if(myPlayer&&state.players[myPlayer]){const me=state.players[myPlayer];badge.style.display="block";badge.className="my-player-badge "+me.color;badge.textContent="⭐ 나는 "+me.num+"번 친구 · "+colors[me.color]}else{badge.style.display="none"}const p=$("players");p.innerHTML="";Object.values(state.players).sort((a,b)=>a.num-b.num).forEach(x=>{const s=document.createElement("span");s.className="player-pill "+x.color;s.textContent=x.num+"번 "+x.name+(x.num===myPlayer?" (나)":"");p.appendChild(s)})}
 function broadcast(msg){Object.values(connections).forEach(c=>{if(c&&c.open)c.send({type:"state",state:state,msg:msg})})}
 function sync(msg){renderBoard();renderPlayers();if(host)broadcast(msg||"")}
+function syncModal(){
+  if(!roomReady || state.selected===null || state.phase==="idle"){ closeCard(); return; }
+  const c=cards[state.selected];
+  $("category").textContent=c.cat;
+  $("cardTitle").textContent=(state.selected+1)+". "+c.title;
+  $("scene").textContent="📌 "+c.scene;
+  $("friend").textContent=c.friend;
+  $("question").textContent="❓ "+c.q;
+  const active=state.players[state.turn];
+  $("activePlayer").textContent=active ? "⭐ 지금 "+active.num+"번 친구가 도전 중!" : "⭐ 친구가 도전 중!";
+  $("result").classList.toggle("show",state.phase==="result");
+  $("speakBtn").style.display=state.phase==="question" ? "inline-block" : "none";
+  $("claimArea").style.display="none";
+  if(state.phase==="result"){
+    $("resultTitle").textContent="🎤 발표 완료! 선생님이 결과를 선택해 주세요.";
+  }
+  $("modal").classList.add("show");
+  if(state.phase==="question") startTimer();
+  else clearInterval(timerId);
+}
 function makeRoom(){
- if(peer)return;host=true;roomCode=Math.random().toString(36).slice(2,8).toUpperCase();peer=new Peer("culture-land-"+roomCode);
+ if(peer)return;host=true;roomCode=String(Math.floor(Math.random()*90)+10);peer=new Peer("culture-land-"+roomCode);
  peer.on("open",()=>{roomReady=true;myPlayer=1;state.players[1]={num:1,name:"방장",color:"red"};$("roomInfo").innerHTML="방 코드 <b>"+roomCode+"</b> — 친구들에게 이 코드를 알려 주세요.";sync()});
  peer.on("connection",c=>{connections[c.peer]=c;c.on("open",()=>{const used=Object.keys(state.players).map(Number),n=[1,2,3,4].find(x=>!used.includes(x));if(!n){c.send({type:"full",state:state});return}state.players[n]={num:n,name:"플레이어 "+n,color:["","red","green","blue","yellow"][n]};c.playerNum=n;c.send({type:"assign",num:n,state:state});sync("joined")});c.on("data",d=>handleData(c,d));c.on("close",()=>{delete connections[c.peer];sync()})});
  peer.on("error",e=>alert("방 연결에 문제가 생겼어요. 새로고침 후 다시 시도해 주세요.\n"+e.type));
 }
 function joinRoom(){
- const code=$("roomInput").value.trim().toUpperCase();if(code.length<4){alert("방 코드를 입력해 주세요.");return}if(peer)return;roomCode=code;peer=new Peer();
+ const code=$("roomInput").value.trim();if(!/^\d{2}$/.test(code)){alert("방 코드를 입력해 주세요.");return}if(peer)return;roomCode=code;peer=new Peer();
  peer.on("open",()=>{const c=peer.connect("culture-land-"+code);connections.host=c;c.on("open",()=>c.send({type:"join",name:"플레이어"}));c.on("data",d=>handleData(c,d));c.on("close",()=>alert("방장과 연결이 끊어졌어요."))});
  peer.on("error",()=>alert("방을 찾을 수 없어요. 방 코드를 확인해 주세요."));
 }
 function handleData(c,d){
  if(d.type==="join"&&host){const used=Object.keys(state.players).map(Number),n=[1,2,3,4].find(x=>!used.includes(x));if(!n){c.send({type:"full",state:state});return}state.players[n]={num:n,name:"플레이어 "+n,color:["","red","green","blue","yellow"][n]};c.playerNum=n;c.send({type:"assign",num:n,state:state});sync("joined")}
- else if(d.type==="assign"){myPlayer=d.num;roomReady=true;state=d.state;$("roomInfo").innerHTML="방 코드 <b>"+roomCode+"</b> — "+myPlayer+"번으로 참가했어요.";sync()}
- else if(d.type==="state"){state=d.state;roomReady=true;sync()}
+ else if(d.type==="assign"){myPlayer=d.num;roomReady=true;state=d.state;$("roomInfo").innerHTML="방 코드 <b>"+roomCode+"</b> — "+myPlayer+"번으로 참가했어요.";sync();syncModal()}
+ else if(d.type==="state"){state=d.state;roomReady=true;sync();syncModal()}
  else if(d.type==="action"&&host)applyAction(d.action);
  else if(d.type==="full")alert("이 방은 이미 4명이 가득 찼어요.");
 }
 function sendAction(action){if(host)applyAction(action);else if(connections.host&&connections.host.open)connections.host.send({type:"action",action:action})}
 function applyAction(a){
- if(a.kind==="select"&&state.phase==="idle"&&a.turn===state.turn&&!state.lands[a.index]){state.selected=a.index;state.phase="question";state.remaining=30;sync();openCard()}
- else if(a.kind==="speak"&&state.phase==="question"){state.phase="result";sync();showResult()}
- else if(a.kind==="result"&&state.phase==="result"&&a.index===state.selected){if(a.success){state.lands[a.index]=a.color;state.phase="idle";state.selected=null;state.turn=state.turn===4?1:state.turn+1;sync();closeCard();checkEnd()}else{state.phase="idle";state.selected=null;state.turn=state.turn===4?1:state.turn+1;sync();closeCard()}}
+ if(a.kind==="select"&&state.phase==="idle"&&a.turn===state.turn&&!state.lands[a.index]){state.selected=a.index;state.phase="question";state.remaining=30;state.startedAt=Date.now();sync();syncModal()}
+ else if(a.kind==="speak"&&state.phase==="question"){state.phase="result";state.remaining=Math.max(0,30-Math.floor((Date.now()-state.startedAt)/1000));sync();syncModal()}
+ else if(a.kind==="result"&&state.phase==="result"&&a.index===state.selected){if(a.success){state.lands[a.index]=a.color;state.phase="idle";state.selected=null;state.turn=state.turn===4?1:state.turn+1;state.startedAt=0;sync();closeCard();checkEnd()}else{state.phase="idle";state.selected=null;state.turn=state.turn===4?1:state.turn+1;state.startedAt=0;sync();closeCard()}}
 }
 function selectCell(i){if(!roomReady||state.phase!=="idle"||state.turn!==myPlayer||state.lands[i])return;sendAction({kind:"select",index:i,turn:myPlayer})}
 function openCard(){
- const c=cards[state.selected];$("category").textContent=c.cat;$("cardTitle").textContent=(state.selected+1)+". "+c.title;$("scene").textContent="📌 "+c.scene;$("friend").textContent=c.friend;$("question").textContent="❓ "+c.q;$("result").classList.remove("show");$("claimArea").style.display="none";$("failArea").style.display="none";$("speakBtn").style.display="inline-block";$("modal").classList.add("show");startTimer();
+ const c=cards[state.selected];$("category").textContent=c.cat;$("cardTitle").textContent=(state.selected+1)+". "+c.title;$("scene").textContent="📌 "+c.scene;$("friend").textContent=c.friend;$("question").textContent="❓ "+c.q;$("result").classList.toggle("show",state.phase==="result");$("claimArea").style.display="none";$("failArea").style.display="none";$("speakBtn").style.display=state.phase==="question"?"inline-block":"none";const active=state.players[state.turn];$("activePlayer").textContent=active?"⭐ 지금 "+active.num+"번 친구가 도전 중!":"⭐ 친구가 도전 중!";$("modal").classList.add("show");if(state.phase==="question")startTimer();
 }
 function startTimer(){
- clearInterval(timerId);let n=state.remaining||30;$("timer").textContent=n;$("timer").classList.toggle("warn",n<=10);
- timerId=setInterval(()=>{n--;state.remaining=n;$("timer").textContent=n;$("timer").classList.toggle("warn",n<=10);if(n<=0){clearInterval(timerId);if(state.phase==="question")sendAction({kind:"speak"})}},1000)
+ clearInterval(timerId);
+ const tick=()=>{
+   const n=Math.max(0,30-Math.floor((Date.now()-(state.startedAt||Date.now()))/1000));
+   $("timer").textContent=n;$("timer").classList.toggle("warn",n<=10);
+   if(n<=0){clearInterval(timerId);if(state.phase==="question")sendAction({kind:"speak"});}
+ };
+ tick();timerId=setInterval(tick,250);
 }
 function showResult(){clearInterval(timerId);$("timer").textContent=state.remaining;$("speakBtn").style.display="none";$("result").classList.add("show")}
 function closeCard(){clearInterval(timerId);$("modal").classList.remove("show")}
-$("speakBtn").onclick=()=>sendAction({kind:"speak"});
+$("speakBtn").onclick=()=>{if(state.turn===myPlayer)sendAction({kind:"speak"})};
 $("successBtn").onclick=()=>{if(state.selected!==null){$("claimArea").style.display="block";$("failArea").style.display="none";document.querySelectorAll(".colorBtn").forEach(b=>b.disabled=false)}};
 $("failBtn").onclick=()=>{if(state.selected!==null)sendAction({kind:"result",success:false,index:state.selected})};
 $("nextFailBtn").onclick=()=>sendAction({kind:"result",success:false,index:state.selected});
@@ -126,7 +151,7 @@ document.querySelectorAll(".colorBtn").forEach(b=>b.onclick=()=>{const color=b.d
 function checkEnd(){
  if(state.lands.every(Boolean)){$("endPanel").classList.add("show");const sc={red:0,green:0,blue:0,yellow:0};state.lands.forEach(c=>sc[c]++);$("score").innerHTML=Object.entries(sc).map(([c,n])=>"<div>"+colors[c]+"<br><span style='font-size:26px'>"+n+"칸</span></div>").join("");window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})}
 }
-function resetGame(){if(!confirm("현재 게임을 새로 시작할까요?"))return;state={players:state.players,lands:Array(12).fill(null),turn:1,selected:null,phase:"idle",remaining:30,gameNo:state.gameNo+1};$("endPanel").classList.remove("show");closeCard();sync("reset")}
+function resetGame(){if(!confirm("현재 게임을 새로 시작할까요?"))return;state={players:state.players,lands:Array(12).fill(null),turn:1,selected:null,phase:"idle",remaining:30,startedAt:0,gameNo:state.gameNo+1};$("endPanel").classList.remove("show");closeCard();sync("reset")}
 $("hostBtn").onclick=makeRoom;$("joinBtn").onclick=joinRoom;$("resetBtn").onclick=resetGame;$("restartBtn").onclick=resetGame;renderBoard();
 </script>
 </body>
