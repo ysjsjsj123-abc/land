@@ -72,7 +72,7 @@ const cards=[
 {cat:"💬 편견 없는 말",title:"궁금한 것을 물어봐도 될까?",scene:"친구의 문화가 궁금하지만 함부로 판단하거나 놀리고 싶지는 않아요.",friend:"친구: “내 문화가 궁금하면 물어봐도 괜찮아. 모르는 게 있으면 알려 줄게.”",q:"상대방을 존중하면서 궁금한 점을 묻는 대답은 어떻게 말하면 좋을까요?"}
 ];
 const colors={red:"1번 🔴 빨강",green:"2번 🟢 초록",blue:"3번 🔵 파랑",yellow:"4번 🟡 노랑"};
-let peer=null,host=false,roomCode="",myPlayer=null,connections={},hostConnection=null,connectTimer=null,state={players:{},lands:Array(12).fill(null),turn:1,selected:null,phase:"idle",remaining:30,startedAt:0,gameNo:1},timerId=null,roomReady=false;
+let peer=null,host=false,roomCode="",myPlayer=null,connections={},hostConnection=null,connectTimer=null,state={players:{},lands:Array(12).fill(null),turn:1,selected:null,phase:"idle",remaining:30,startedAt:0,judgement:null,judgedBy:null,claimColor:null,gameNo:1},timerId=null,roomReady=false;
 const $=id=>document.getElementById(id);
 function renderBoard(){
  const b=$("board");b.innerHTML="";
@@ -97,8 +97,21 @@ function syncModal(){
   $("result").classList.toggle("show",state.phase==="result");
   $("speakBtn").style.display=state.phase==="question" ? "inline-block" : "none";
   $("claimArea").style.display="none";
+  $("failArea").style.display="none";
   if(state.phase==="result"){
-    $("resultTitle").textContent="🎤 발표 완료! 선생님이 결과를 선택해 주세요.";
+    if(!state.judgement){
+      $("resultTitle").textContent="🎤 발표 완료! 친구들이 발표 내용을 듣고 평가해 주세요.";
+      $("successBtn").disabled=false;$("failBtn").disabled=false;
+    }else if(state.judgement==="success"){
+      $("resultTitle").textContent="😊 친구들이 '성공!'이라고 선택했어요!"+(state.judgedBy?" ("+state.judgedBy+"번 친구의 선택)":"");
+      $("claimArea").style.display="block";
+      $("successBtn").disabled=true;$("failBtn").disabled=true;
+      document.querySelectorAll(".colorBtn").forEach(b=>b.disabled=false);
+    }else{
+      $("resultTitle").textContent="🔁 친구들이 '다시 생각해 보기'를 선택했어요!"+(state.judgedBy?" ("+state.judgedBy+"번 친구의 선택)":"");
+      $("successBtn").disabled=true;$("failBtn").disabled=true;
+      $("failArea").style.display="block";
+    }
   }
   $("modal").classList.add("show");
   if(state.phase==="question") startTimer();
@@ -216,9 +229,25 @@ function handleData(c,d){
 }
 function sendAction(action){if(host)applyAction(action);else if(connections.host&&connections.host.open)connections.host.send({type:"action",action:action})}
 function applyAction(a){
- if(a.kind==="select"&&state.phase==="idle"&&a.turn===state.turn&&!state.lands[a.index]){state.selected=a.index;state.phase="question";state.remaining=30;state.startedAt=Date.now();sync();syncModal()}
- else if(a.kind==="speak"&&state.phase==="question"){state.phase="result";state.remaining=Math.max(0,30-Math.floor((Date.now()-state.startedAt)/1000));sync();syncModal()}
- else if(a.kind==="result"&&state.phase==="result"&&a.index===state.selected){if(a.success){state.lands[a.index]=a.color;state.phase="idle";state.selected=null;state.turn=state.turn===4?1:state.turn+1;state.startedAt=0;sync();closeCard();checkEnd()}else{state.phase="idle";state.selected=null;state.turn=state.turn===4?1:state.turn+1;state.startedAt=0;sync();closeCard()}}
+ if(a.kind==="select"&&state.phase==="idle"&&a.turn===state.turn&&!state.lands[a.index]){
+   state.selected=a.index;state.phase="question";state.remaining=30;state.startedAt=Date.now();state.judgement=null;state.judgedBy=null;state.claimColor=null;sync();syncModal()
+ }
+ else if(a.kind==="speak"&&state.phase==="question"){
+   state.phase="result";state.remaining=Math.max(0,30-Math.floor((Date.now()-state.startedAt)/1000));state.judgement=null;state.judgedBy=null;state.claimColor=null;sync();syncModal()
+ }
+ else if(a.kind==="judge"&&state.phase==="result"&&a.index===state.selected&&!state.judgement){
+   state.judgement=a.success?"success":"fail";state.judgedBy=a.by||null;sync();syncModal();
+   if(!a.success)setTimeout(()=>finishRound(false),1800);
+ }
+ else if(a.kind==="claim"&&state.phase==="result"&&state.judgement==="success"&&a.index===state.selected&&["red","green","blue","yellow"].includes(a.color)){
+   state.claimColor=a.color;sync();setTimeout(()=>finishRound(true),900);
+ }
+}
+function finishRound(success){
+ if(state.selected===null)return;
+ if(success&&state.claimColor)state.lands[state.selected]=state.claimColor;
+ state.phase="idle";state.selected=null;state.turn=state.turn===4?1:state.turn+1;state.startedAt=0;state.judgement=null;state.judgedBy=null;state.claimColor=null;
+ sync();closeCard();checkEnd();
 }
 function selectCell(i){if(!roomReady||state.phase!=="idle"||state.turn!==myPlayer||state.lands[i])return;sendAction({kind:"select",index:i,turn:myPlayer})}
 function openCard(){
@@ -236,14 +265,14 @@ function startTimer(){
 function showResult(){clearInterval(timerId);$("timer").textContent=state.remaining;$("speakBtn").style.display="none";$("result").classList.add("show")}
 function closeCard(){clearInterval(timerId);$("modal").classList.remove("show")}
 $("speakBtn").onclick=()=>{if(state.turn===myPlayer)sendAction({kind:"speak"})};
-$("successBtn").onclick=()=>{if(state.selected!==null){$("claimArea").style.display="block";$("failArea").style.display="none";document.querySelectorAll(".colorBtn").forEach(b=>b.disabled=false)}};
-$("failBtn").onclick=()=>{if(state.selected!==null)sendAction({kind:"result",success:false,index:state.selected})};
-$("nextFailBtn").onclick=()=>sendAction({kind:"result",success:false,index:state.selected});
-document.querySelectorAll(".colorBtn").forEach(b=>b.onclick=()=>{const color=b.dataset.color;if(state.selected!==null&&(color===["","red","green","blue","yellow"][state.turn]||host))sendAction({kind:"result",success:true,index:state.selected,color:color})});
+$("successBtn").onclick=()=>{if(state.selected!==null&&!state.judgement)sendAction({kind:"judge",success:true,index:state.selected,by:myPlayer})};
+$("failBtn").onclick=()=>{if(state.selected!==null&&!state.judgement)sendAction({kind:"judge",success:false,index:state.selected,by:myPlayer})};
+$("nextFailBtn").onclick=()=>{if(state.judgement==="fail")finishRound(false)};
+document.querySelectorAll(".colorBtn").forEach(b=>b.onclick=()=>{const color=b.dataset.color;if(state.selected!==null&&state.judgement==="success"&&(color===["","red","green","blue","yellow"][state.turn]||host))sendAction({kind:"claim",index:state.selected,color:color})});
 function checkEnd(){
  if(state.lands.every(Boolean)){$("endPanel").classList.add("show");const sc={red:0,green:0,blue:0,yellow:0};state.lands.forEach(c=>sc[c]++);$("score").innerHTML=Object.entries(sc).map(([c,n])=>"<div>"+colors[c]+"<br><span style='font-size:26px'>"+n+"칸</span></div>").join("");window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})}
 }
-function resetGame(){if(!confirm("현재 게임을 새로 시작할까요?"))return;state={players:state.players,lands:Array(12).fill(null),turn:1,selected:null,phase:"idle",remaining:30,startedAt:0,gameNo:state.gameNo+1};$("endPanel").classList.remove("show");closeCard();sync("reset")}
+function resetGame(){if(!confirm("현재 게임을 새로 시작할까요?"))return;state={players:state.players,lands:Array(12).fill(null),turn:1,selected:null,phase:"idle",remaining:30,startedAt:0,judgement:null,judgedBy:null,claimColor:null,gameNo:state.gameNo+1};$("endPanel").classList.remove("show");closeCard();sync("reset")}
 $("hostBtn").onclick=makeRoom;$("joinBtn").onclick=joinRoom;$("retryBtn").onclick=()=>{destroyPeer();setTimeout(joinRoom,250)};$("resetBtn").onclick=resetGame;$("restartBtn").onclick=resetGame;renderBoard();
 </script>
 </body>
