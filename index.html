@@ -19,7 +19,7 @@ h1{margin:0;font-size:clamp(25px,4vw,40px);letter-spacing:-1px}.sub{font-size:14
 input:focus{border-color:#7b9cff}.btn{padding:11px 16px;border-radius:14px;font-weight:800;box-shadow:0 4px 0 rgba(0,0,0,.12);transition:.12s;touch-action:manipulation}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.12)}.primary{background:#263b67;color:white}.secondary{background:#eef2f7;color:#344054}.danger{background:#ff646d;color:#fff}.success{background:#42bd72;color:#fff}
 .room{background:#f4f8ff;border-radius:16px;padding:10px 13px;margin-top:9px;font-weight:800}.room b{font-size:22px;letter-spacing:3px}
-.players{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.player-pill{padding:7px 10px;border-radius:999px;font-weight:800;background:#eef1f5}.player-pill.red{background:#ffdfe1}.player-pill.green{background:#ddf7e7}.player-pill.blue{background:#deebff}.player-pill.yellow{background:#fff0bd}
+.players{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.player-pill{padding:7px 10px;border-radius:999px;font-weight:800;background:#eef1f5;transition:.2s}.player-pill.red{background:#ffdfe1}.player-pill.green{background:#ddf7e7}.player-pill.blue{background:#deebff}.player-pill.yellow{background:#fff0bd}
 .turnbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.turn{font-weight:1000;font-size:22px;padding:10px 14px;border-radius:16px;background:#fff7d9;border:2px solid #f2d88a}.turn small{font-weight:600;color:#667085}
 .legend{display:flex;gap:6px;flex-wrap:wrap}.dot{padding:6px 9px;border-radius:999px;font-weight:800;font-size:13px}.dot.red{background:#ffdfe1}.dot.green{background:#ddf7e7}.dot.blue{background:#deebff}.dot.yellow{background:#fff0bd}
 .board{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;background:#c9ead7;padding:12px;border-radius:24px;border:4px solid #fff;box-shadow:var(--shadow)}
@@ -92,9 +92,9 @@ function renderBoard(){
  state.lands.forEach((c,i)=>{const el=document.createElement("button");el.className="cell "+(c||"")+(state.phase==="idle"&&roomReady&&!c&&state.turn===myPlayer?" available":" disabled");el.textContent=i+1;
  if(c){const m=document.createElement("span");m.className="mini";m.textContent=colors[c].split(" ")[1]||"";el.appendChild(m)}el.onclick=()=>selectCell(i);b.appendChild(el)});
  const current=state.players[state.turn];$("turnText").innerHTML=roomReady?"🎯 지금은 <b>"+(current?current.name:state.turn+"번 친구")+"</b>의 차례 <small>("+state.turn+"번 "+["","🔴","🟢","🔵","🟡"][state.turn]+")</small>":"방을 만들거나 들어가면 게임이 시작됩니다.";
- $("status").textContent=roomReady?(state.phase==="idle"?"회색 땅을 하나 골라 미션을 시작하세요!":state.phase==="question"?"상황을 읽고 30초 안에 대답해 보세요!":"결과를 선택해 주세요."):"4명이 같은 방에 들어오면 시작할 수 있어요.";
+ $("status").textContent=roomReady?(state.phase==="idle"?(current&&current.online===false?"⏸️ "+current.num+"번 친구가 잠시 자리를 비웠어요. 다시 접속하면 게임을 계속할 수 있어요.":"회색 땅을 하나 골라 미션을 시작하세요!"):state.phase==="question"?"상황을 읽고 30초 안에 대답해 보세요!":"결과를 선택해 주세요."):"4명이 같은 방에 들어오면 시작할 수 있어요.";
 }
-function renderPlayers(){const badge=$("myPlayerBadge");if(myPlayer&&state.players[myPlayer]){const me=state.players[myPlayer];badge.style.display="block";badge.className="my-player-badge "+me.color;badge.textContent="⭐ 나는 "+me.num+"번 친구 · "+colors[me.color]}else{badge.style.display="none"}const p=$("players");p.innerHTML="";Object.values(state.players).sort((a,b)=>a.num-b.num).forEach(x=>{const s=document.createElement("span");s.className="player-pill "+x.color;s.textContent=x.num+"번 "+x.name+(x.num===myPlayer?" (나)":"");p.appendChild(s)})}
+function renderPlayers(){const badge=$("myPlayerBadge");if(myPlayer&&state.players[myPlayer]){const me=state.players[myPlayer];badge.style.display="block";badge.className="my-player-badge "+me.color;badge.textContent="⭐ 나는 "+me.num+"번 친구 · "+colors[me.color]}else{badge.style.display="none"}const p=$("players");p.innerHTML="";Object.values(state.players).sort((a,b)=>a.num-b.num).forEach(x=>{const s=document.createElement("span");s.className="player-pill "+x.color;s.style.opacity=x.online===false?".5":"1";s.textContent=x.num+"번 "+x.name+(x.num===myPlayer?" (나)":"")+(x.online===false?" · 잠시 자리 비움":"");p.appendChild(s)})}
 function broadcast(msg){Object.values(connections).forEach(c=>{if(c&&c.open)c.send({type:"state",state:state,msg:msg})})}
 function sync(msg){renderBoard();renderPlayers();if(host)broadcast(msg||"")}
 function syncModal(){
@@ -163,6 +163,12 @@ function waitForConnection(c){
  c.on("close",()=>{setConnStatus("bad","🔴 연결이 끊어졌습니다.");});
  connectTimer=setTimeout(()=>{if(!done){done=true;try{c.close()}catch(e){}setConnStatus("bad","🔴 연결 시간이 초과됐어요. 다시 시도해 주세요.");}},20000);
 }
+function playerKey(group){return "cultureLandPlayer_"+group}
+function savedPlayerNumber(group){const n=Number(localStorage.getItem(playerKey(group)));return n>=2&&n<=4?n:null}
+function savePlayerNumber(group,n){try{localStorage.setItem(playerKey(group),String(n))}catch(e){}}
+function activeConnectionForPlayer(n){
+ return Object.values(connections).find(c=>c&&c.playerNum===n&&c.open);
+}
 function groupPeerId(group){return "culture-land-group-"+group}
 function enterGroup(group){
  if(peer){alert("이미 모둠에 들어가 있어요. 새 모둠에 들어가려면 페이지를 새로고침해 주세요.");return}
@@ -174,7 +180,7 @@ function enterGroup(group){
  peer=new Peer(groupPeerId(group),peerOptions());
  peer.on("open",()=>{
    roomReady=true;myPlayer=1;
-   state.players[1]={num:1,name:"1번 친구",color:"red"};
+   state.players[1]={num:1,name:"1번 친구",color:"red",online:true};
    $("roomInfo").innerHTML="<b>"+group+"모둠</b>에 들어왔어요. 친구들을 기다리는 중!";
    setConnStatus("ok","🟢 "+group+"모둠이 열렸어요. 다른 친구를 기다리는 중!");
    sync();
@@ -182,15 +188,23 @@ function enterGroup(group){
  peer.on("connection",c=>{
    connections[c.peer]=c;
    c.on("open",()=>{
-     const used=Object.keys(state.players).map(Number),n=[1,2,3,4].find(x=>!used.includes(x));
+     // The reconnecting tablet sends its saved player number. Reuse that seat if it is not currently connected.
+     const requested=Number((c.metadata&&c.metadata.playerNum)||d.preferredPlayer);
+     let n=null;
+     if(requested>=2&&requested<=4&&!activeConnectionForPlayer(requested)){
+       n=requested;
+     }else{
+       n=[1,2,3,4].find(x=>!activeConnectionForPlayer(x)&&(!state.players[x]||state.players[x].online===false));
+     }
      if(!n){c.send({type:"full",state:state});return}
-     state.players[n]={num:n,name:n+"번 친구",color:["","red","green","blue","yellow"][n]};
-     c.playerNum=n;c.send({type:"assign",num:n,state:state});
+     state.players[n]={num:n,name:n+"번 친구",color:["","red","green","blue","yellow"][n],online:true};
+     c.playerNum=n;
+     c.send({type:"assign",num:n,state:state});
      setConnStatus("ok","🟢 "+n+"번 친구가 "+group+"모둠에 들어왔어요.");
      sync("joined");
    });
    c.on("data",d=>handleData(c,d));
-   c.on("close",()=>{delete connections[c.peer];sync()});
+   c.on("close",()=>{const pn=c.playerNum;if(pn&&state.players[pn])state.players[pn].online=false;delete connections[c.peer];sync("left")});
    c.on("error",()=>{delete connections[c.peer];setConnStatus("bad","🔴 친구의 연결이 끊어졌습니다.")});
  });
  peer.on("error",e=>{
@@ -211,12 +225,12 @@ function joinExistingGroup(group){
  setConnStatus("wait","🟡 "+group+"모둠에 연결하는 중...");
  peer=new Peer(undefined,peerOptions());
  peer.on("open",()=>{
-   const c=peer.connect(groupPeerId(group),{reliable:true,serialization:"json",metadata:{device:"tablet",group:group}});
+   const preferred=savedPlayerNumber(group); const c=peer.connect(groupPeerId(group),{reliable:true,serialization:"json",metadata:{device:"tablet",group:group,playerNum:preferred||""}});
    hostConnection=c;connections.host=c;
    c.on("open",()=>{
      setConnStatus("wait","🟡 연결됨! "+group+"모둠에 입장하는 중...");
-     c.send({type:"join",name:"플레이어"});
-     setTimeout(()=>{if(!roomReady&&c.open)c.send({type:"join",name:"플레이어"})},1200);
+     c.send({type:"join",name:"플레이어",preferredPlayer:preferred||null});
+     setTimeout(()=>{if(!roomReady&&c.open)c.send({type:"join",name:"플레이어",preferredPlayer:preferred||null})},1200);
    });
    c.on("data",d=>handleData(c,d));
    c.on("close",()=>{setConnStatus("bad","🔴 "+group+"모둠과의 연결이 끊어졌어요.");roomReady=false});
@@ -236,10 +250,10 @@ function joinExistingGroup(group){
 }
 function handleData(c,d){
  if(d.type==="join"&&host){const existing=Object.keys(state.players).find(k=>Number(k)>1&&connections[c.peer]&&connections[c.peer].playerNum===Number(k));if(existing){c.send({type:"assign",num:Number(existing),state:state});return}const used=Object.keys(state.players).map(Number),n=[1,2,3,4].find(x=>!used.includes(x));if(!n){c.send({type:"full",state:state});return}state.players[n]={num:n,name:"플레이어 "+n,color:["","red","green","blue","yellow"][n]};c.playerNum=n;c.send({type:"assign",num:n,state:state});sync("joined")}
- else if(d.type==="assign"){myPlayer=d.num;roomReady=true;clearTimeout(connectTimer);state=d.state;$("roomInfo").innerHTML="<b>"+selectedGroup+"모둠</b>에 들어왔어요. — "+myPlayer+"번 친구";sync();syncModal()}
+ else if(d.type==="assign"){myPlayer=d.num;savePlayerNumber(selectedGroup,d.num);roomReady=true;clearTimeout(connectTimer);state=d.state;if(state.players[d.num])state.players[d.num].online=true;$("roomInfo").innerHTML="<b>"+selectedGroup+"모둠</b>에 들어왔어요. — "+myPlayer+"번 친구";sync();syncModal()}
  else if(d.type==="state"){state=d.state;roomReady=true;sync();syncModal()}
  else if(d.type==="action"&&host)applyAction(d.action);
- else if(d.type==="full")alert("이 방은 이미 4명이 가득 찼어요.");
+ else if(d.type==="full"){const remembered=savedPlayerNumber(selectedGroup);if(remembered)alert("내가 전에 사용하던 "+remembered+"번 자리를 다시 연결할 수 없어요. 다른 태블릿에서 "+remembered+"번 친구가 이미 접속해 있는지 확인해 주세요.");else alert("이 모둠은 이미 4명이 가득 찼어요.");}
 }
 function sendAction(action){if(host)applyAction(action);else if(connections.host&&connections.host.open)connections.host.send({type:"action",action:action})}
 function applyAction(a){
