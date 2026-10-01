@@ -189,7 +189,7 @@ function enterGroup(group){
    connections[c.peer]=c;
    c.on("open",()=>{
      // The reconnecting tablet sends its saved player number. Reuse that seat if it is not currently connected.
-     const requested=Number((c.metadata&&c.metadata.playerNum)||d.preferredPlayer);
+     const requested=Number(c.metadata&&c.metadata.playerNum);
      let n=null;
      if(requested>=2&&requested<=4&&!activeConnectionForPlayer(requested)){
        n=requested;
@@ -204,7 +204,7 @@ function enterGroup(group){
      sync("joined");
    });
    c.on("data",d=>handleData(c,d));
-   c.on("close",()=>{const pn=c.playerNum;if(pn&&state.players[pn])state.players[pn].online=false;delete connections[c.peer];sync("left")});
+   c.on("close",()=>{const pn=c.playerNum;const current=connections[c.peer];if(current===c&&pn&&state.players[pn])state.players[pn].online=false;if(current===c)delete connections[c.peer];sync("left")});
    c.on("error",()=>{delete connections[c.peer];setConnStatus("bad","🔴 친구의 연결이 끊어졌습니다.")});
  });
  peer.on("error",e=>{
