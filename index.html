@@ -30,7 +30,7 @@ input:focus{border-color:#7b9cff}.btn{padding:11px 16px;border-radius:14px;font-
 .card{width:min(760px,100%);background:#fffdf9;border-radius:30px;padding:20px;box-shadow:0 14px 0 rgba(0,0,0,.15);animation:pop .18s ease-out}
 @keyframes pop{from{transform:scale(.88) rotate(-1deg);opacity:.3}to{transform:scale(1);opacity:1}}
 .cardtop{display:flex;justify-content:space-between;align-items:center;gap:10px}.badge{display:inline-block;background:#fff0bd;color:#6b5000;border-radius:999px;padding:6px 11px;font-weight:900}
-.active-player{font-size:clamp(15px,2.5vw,20px);font-weight:1000;padding:9px 13px;border-radius:999px;background:#eef4ff;border:2px solid #c9dafc;white-space:nowrap}.timer{font-size:clamp(34px,7vw,58px);font-weight:1000;line-height:1}.timer.warn{color:#f04444}.card h2{font-size:clamp(24px,4vw,34px);margin:15px 0 10px}
+.active-player{font-size:clamp(15px,2.5vw,20px);font-weight:1000;padding:9px 13px;border-radius:999px;background:#eef4ff;border:2px solid #c9dafc;white-space:nowrap}.timer{width:82px;height:82px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(28px,6vw,44px);font-weight:1000;line-height:1;background:conic-gradient(#6f9df7 360deg,#e7ebf1 0deg);border:6px solid #fff;box-shadow:0 4px 0 rgba(0,0,0,.12);position:relative}.timer::after{content:"";position:absolute;inset:7px;border-radius:50%;background:#fffdf9;z-index:0}.timer{z-index:0}.timer::before{content:"";position:absolute;z-index:1}.timer{isolation:isolate}.timer.warn{color:#f04444;background:conic-gradient(#f04444 360deg,#f4d7d9 0deg)}.card h2{font-size:clamp(24px,4vw,34px);margin:15px 0 10px}
 .scene{font-size:clamp(18px,3vw,24px);line-height:1.55;background:#f7f9fc;border:3px dashed #d6dce7;border-radius:20px;padding:16px}
 .friend{margin-top:12px;background:#eaf6ff;border-radius:18px;padding:14px;font-size:clamp(17px,2.8vw,22px);line-height:1.5}.question{margin-top:12px;font-weight:900;font-size:clamp(18px,3vw,23px);line-height:1.45}
 .shared-note{margin-top:12px;background:#f8f2ff;border:2px solid #e5d5ff;color:#7149a8;border-radius:14px;padding:9px 12px;font-weight:800;text-align:center}.actions{display:flex;gap:9px;justify-content:flex-end;align-items:center;margin-top:16px;flex-wrap:wrap}.speak{background:#263b67;color:#fff;font-size:17px}
@@ -65,7 +65,7 @@ input:focus{border-color:#7b9cff}.btn{padding:11px 16px;border-radius:14px;font-
 <section class="panel"><div class="turnbar"><div class="turn" id="turnText">방을 만들거나 들어가면 게임이 시작됩니다.</div><button class="btn secondary" id="changeTurnBtn" style="display:none">🔄 차례 바꾸기</button><div id="turnPicker" style="display:none;gap:8px;flex-wrap:wrap;margin-top:8px"></div><div class="legend"><span class="dot red">1 빨강</span><span class="dot green">2 초록</span><span class="dot blue">3 파랑</span><span class="dot yellow">4 노랑</span></div></div><div class="board" id="board"></div><div class="status" id="status">회색 땅을 하나 골라 문화 존중 미션을 시작해 보세요!</div></section>
 <section class="panel end" id="endPanel"><div class="trophy">🏆</div><h2>12칸 모두 탐험 완료!</h2><p>우리 모둠은 서로의 문화를 존중하는 방법을 많이 배웠어요.</p><div class="score" id="score"></div><button class="btn primary" id="restartBtn">🌱 다시 시작하기</button></section>
 </div>
-<div class="modal" id="modal"><div class="card"><div class="cardtop"><span class="badge" id="category"></span><div class="active-player" id="activePlayer">지금 1번 친구가 도전 중!</div><div class="timer" id="timer">30</div></div><h2 id="cardTitle"></h2><div class="scene" id="scene"></div><div class="friend" id="friend"></div><div class="question" id="question"></div><div class="shared-note" id="sharedNote">👀 모든 친구의 화면에 같은 미션이 열려 있어요!</div><div class="actions"><button class="btn speak" id="speakBtn">🎤 발표하기</button></div>
+<div class="modal" id="modal"><div class="card"><div class="cardtop"><span class="badge" id="category"></span><div class="active-player" id="activePlayer">지금 1번 친구가 도전 중!</div><div class="timer" id="timer"><span style="position:relative;z-index:2">30</span></div></div><h2 id="cardTitle"></h2><div class="scene" id="scene"></div><div class="friend" id="friend"></div><div class="question" id="question"></div><div class="shared-note" id="sharedNote">👀 모든 친구의 화면에 같은 미션이 열려 있어요!</div><div class="actions"><button class="btn speak" id="speakBtn">🎤 발표하기</button></div>
 <div class="result" id="result"><div class="result-title" id="resultTitle">발표를 들었나요? 결과를 선택해 주세요.</div><div class="row"><button class="btn success" id="successBtn">😊 성공!</button><button class="btn danger" id="failBtn">🔁 다시 생각해 보기</button></div>
 <div id="claimArea" style="display:none;margin-top:12px"><div class="result-title">🎨 성공! 이 땅을 누구의 색으로 칠할까요?</div><div class="colorBtns"><button class="colorBtn red" data-color="red">1 🔴 빨강</button><button class="colorBtn green" data-color="green">2 🟢 초록</button><button class="colorBtn blue" data-color="blue">3 🔵 파랑</button><button class="colorBtn yellow" data-color="yellow">4 🟡 노랑</button></div></div>
 <div id="failArea" style="display:none;margin-top:10px"><button class="btn primary" id="nextFailBtn">➡️ 다음 친구 차례</button></div></div></div></div>
@@ -117,9 +117,7 @@ function syncModal(){
       $("successBtn").disabled=false;$("failBtn").disabled=false;
     }else if(state.judgement==="success"){
       $("resultTitle").textContent="😊 친구들이 '성공!'이라고 선택했어요!"+(state.judgedBy?" ("+state.judgedBy+"번 친구의 선택)":"");
-      $("claimArea").style.display="block";
       $("successBtn").disabled=true;$("failBtn").disabled=true;
-      document.querySelectorAll(".colorBtn").forEach(b=>b.disabled=false);
     }else{
       $("resultTitle").textContent="🔁 친구들이 '다시 생각해 보기'를 선택했어요!"+(state.judgedBy?" ("+state.judgedBy+"번 친구의 선택)":"");
       $("successBtn").disabled=true;$("failBtn").disabled=true;
@@ -265,16 +263,14 @@ function applyAction(a){
    state.phase="result";state.remaining=Math.max(0,30-Math.floor((Date.now()-state.startedAt)/1000));state.judgement=null;state.judgedBy=null;state.claimColor=null;sync();syncModal()
  }
  else if(a.kind==="judge"&&state.phase==="result"&&a.index===state.selected&&!state.judgement){
-   state.judgement=a.success?"success":"fail";state.judgedBy=a.by||null;sync();syncModal();
-   if(!a.success)setTimeout(()=>finishRound(false),1800);
+   state.judgement=a.success?"success":"fail";state.judgedBy=a.by||null;
+   if(a.success){state.claimColor=["","red","green","blue","yellow"][state.turn];state.lands[state.selected]=state.claimColor;sync();syncModal();setTimeout(()=>finishRound(true),1200)}else{sync();syncModal();setTimeout(()=>finishRound(false),1800)}
  }
- else if(a.kind==="claim"&&state.phase==="result"&&state.judgement==="success"&&a.index===state.selected&&["red","green","blue","yellow"].includes(a.color)){
-   state.claimColor=a.color;sync();setTimeout(()=>finishRound(true),900);
- }
+
 }
 function finishRound(success){
  if(state.selected===null)return;
- if(success&&state.claimColor)state.lands[state.selected]=state.claimColor;
+ if(success&&!state.lands[state.selected])state.lands[state.selected]=["","red","green","blue","yellow"][state.turn];
  state.phase="idle";state.selected=null;state.turn=state.turn===4?1:state.turn+1;state.startedAt=0;state.judgement=null;state.judgedBy=null;state.claimColor=null;
  sync();closeCard();checkEnd();
 }
@@ -288,18 +284,18 @@ function startTimer(){
  clearInterval(timerId);
  const tick=()=>{
    const n=Math.max(0,30-Math.floor((Date.now()-(state.startedAt||Date.now()))/1000));
-   $("timer").textContent=n;$("timer").classList.toggle("warn",n<=10);
+   $("timer").querySelector("span").textContent=n; const deg=Math.max(0,n/30*360); $("timer").style.background=`conic-gradient(${n<=10?"#f04444":"#6f9df7"} ${deg}deg, ${n<=10?"#f4d7d9":"#e7ebf1"} ${deg}deg)`; $("timer").classList.toggle("warn",n<=10);
    if(n<=0){clearInterval(timerId);if(state.phase==="question")sendAction({kind:"speak"});}
  };
  tick();timerId=setInterval(tick,250);
 }
-function showResult(){clearInterval(timerId);$("timer").textContent=state.remaining;$("speakBtn").style.display="none";$("result").classList.add("show")}
+function showResult(){clearInterval(timerId);$("timer").querySelector("span").textContent=state.remaining;$("speakBtn").style.display="none";$("result").classList.add("show")}
 function closeCard(){clearInterval(timerId);$("modal").classList.remove("show")}
 $("speakBtn").onclick=()=>{if(state.turn===myPlayer)sendAction({kind:"speak"})};
 $("successBtn").onclick=()=>{if(state.selected!==null&&!state.judgement)sendAction({kind:"judge",success:true,index:state.selected,by:myPlayer})};
 $("failBtn").onclick=()=>{if(state.selected!==null&&!state.judgement)sendAction({kind:"judge",success:false,index:state.selected,by:myPlayer})};
 $("nextFailBtn").onclick=()=>{if(state.judgement==="fail")finishRound(false)};
-document.querySelectorAll(".colorBtn").forEach(b=>b.onclick=()=>{const color=b.dataset.color;if(state.selected!==null&&state.judgement==="success"&&(color===["","red","green","blue","yellow"][state.turn]||host))sendAction({kind:"claim",index:state.selected,color:color})});
+
 function checkEnd(){
  if(state.lands.every(Boolean)){$("endPanel").classList.add("show");const sc={red:0,green:0,blue:0,yellow:0};state.lands.forEach(c=>sc[c]++);$("score").innerHTML=Object.entries(sc).map(([c,n])=>"<div>"+colors[c]+"<br><span style='font-size:26px'>"+n+"칸</span></div>").join("");window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})}
 }
