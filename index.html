@@ -62,7 +62,7 @@ input:focus{border-color:#7b9cff}.btn{padding:11px 16px;border-radius:14px;font-
 </div>
 <div class="panel"><h2>🎨 플레이어 색</h2><div class="players"><span class="player-pill red">1번 🔴 빨강</span><span class="player-pill green">2번 🟢 초록</span><span class="player-pill blue">3번 🔵 파랑</span><span class="player-pill yellow">4번 🟡 노랑</span></div><div class="help">차례가 된 친구가 땅 1칸을 골라 상황 카드를 읽고 대답해요. 제한 시간은 30초!</div></div>
 </section>
-<section class="panel"><div class="turnbar"><div class="turn" id="turnText">방을 만들거나 들어가면 게임이 시작됩니다.</div><div class="legend"><span class="dot red">1 빨강</span><span class="dot green">2 초록</span><span class="dot blue">3 파랑</span><span class="dot yellow">4 노랑</span></div></div><div class="board" id="board"></div><div class="status" id="status">회색 땅을 하나 골라 문화 존중 미션을 시작해 보세요!</div></section>
+<section class="panel"><div class="turnbar"><div class="turn" id="turnText">방을 만들거나 들어가면 게임이 시작됩니다.</div><button class="btn secondary" id="changeTurnBtn" style="display:none">🔄 차례 바꾸기</button><div class="legend"><span class="dot red">1 빨강</span><span class="dot green">2 초록</span><span class="dot blue">3 파랑</span><span class="dot yellow">4 노랑</span></div></div><div class="board" id="board"></div><div class="status" id="status">회색 땅을 하나 골라 문화 존중 미션을 시작해 보세요!</div></section>
 <section class="panel end" id="endPanel"><div class="trophy">🏆</div><h2>12칸 모두 탐험 완료!</h2><p>우리 모둠은 서로의 문화를 존중하는 방법을 많이 배웠어요.</p><div class="score" id="score"></div><button class="btn primary" id="restartBtn">🌱 다시 시작하기</button></section>
 </div>
 <div class="modal" id="modal"><div class="card"><div class="cardtop"><span class="badge" id="category"></span><div class="active-player" id="activePlayer">지금 1번 친구가 도전 중!</div><div class="timer" id="timer">30</div></div><h2 id="cardTitle"></h2><div class="scene" id="scene"></div><div class="friend" id="friend"></div><div class="question" id="question"></div><div class="shared-note" id="sharedNote">👀 모든 친구의 화면에 같은 미션이 열려 있어요!</div><div class="actions"><button class="btn speak" id="speakBtn">🎤 발표하기</button></div>
@@ -92,7 +92,7 @@ function renderBoard(){
  state.lands.forEach((c,i)=>{const el=document.createElement("button");el.className="cell "+(c||"")+(state.phase==="idle"&&roomReady&&!c&&state.turn===myPlayer?" available":" disabled");el.textContent=i+1;
  if(c){const m=document.createElement("span");m.className="mini";m.textContent=colors[c].split(" ")[1]||"";el.appendChild(m)}el.onclick=()=>selectCell(i);b.appendChild(el)});
  const current=state.players[state.turn];$("turnText").innerHTML=roomReady?"🎯 지금은 <b>"+(current?current.name:state.turn+"번 친구")+"</b>의 차례 <small>("+state.turn+"번 "+["","🔴","🟢","🔵","🟡"][state.turn]+")</small>":"방을 만들거나 들어가면 게임이 시작됩니다.";
- $("status").textContent=roomReady?(state.phase==="idle"?(current&&current.online===false?"⏸️ "+current.num+"번 친구가 잠시 자리를 비웠어요. 다시 접속하면 게임을 계속할 수 있어요.":"회색 땅을 하나 골라 미션을 시작하세요!"):state.phase==="question"?"상황을 읽고 30초 안에 대답해 보세요!":"결과를 선택해 주세요."):"4명이 같은 방에 들어오면 시작할 수 있어요.";
+ $("status").textContent=roomReady?(state.phase==="idle"?(current&&current.online===false?"⏸️ "+current.num+"번 친구가 잠시 자리를 비웠어요. 다시 접속하면 게임을 계속할 수 있어요.":"회색 땅을 하나 골라 미션을 시작하세요!"):state.phase==="question"?"상황을 읽고 30초 안에 대답해 보세요!":"결과를 선택해 주세요."):"4명이 같은 방에 들어오면 시작할 수 있어요."; const cb=$("changeTurnBtn"); if(cb)cb.style.display=roomReady&&state.phase==="idle"?"inline-block":"none";
 }
 function renderPlayers(){const badge=$("myPlayerBadge");if(myPlayer&&state.players[myPlayer]){const me=state.players[myPlayer];badge.style.display="block";badge.className="my-player-badge "+me.color;badge.textContent="⭐ 나는 "+me.num+"번 친구 · "+colors[me.color]}else{badge.style.display="none"}const p=$("players");p.innerHTML="";Object.values(state.players).sort((a,b)=>a.num-b.num).forEach(x=>{const s=document.createElement("span");s.className="player-pill "+x.color;s.style.opacity=x.online===false?".5":"1";s.textContent=x.num+"번 "+x.name+(x.num===myPlayer?" (나)":"")+(x.online===false?" · 잠시 자리 비움":"");p.appendChild(s)})}
 function broadcast(msg){Object.values(connections).forEach(c=>{if(c&&c.open)c.send({type:"state",state:state,msg:msg})})}
@@ -257,7 +257,8 @@ function handleData(c,d){
 }
 function sendAction(action){if(host)applyAction(action);else if(connections.host&&connections.host.open)connections.host.send({type:"action",action:action})}
 function applyAction(a){
- if(a.kind==="select"&&state.phase==="idle"&&a.turn===state.turn&&!state.lands[a.index]){
+ if(a.kind==="changeTurn"&&state.phase==="idle"&&a.turn>=1&&a.turn<=4){state.turn=a.turn;sync("turn");}
+ else if(a.kind==="select"&&state.phase==="idle"&&a.turn===state.turn&&!state.lands[a.index]){
    state.selected=a.index;state.phase="question";state.remaining=30;state.startedAt=Date.now();state.judgement=null;state.judgedBy=null;state.claimColor=null;sync();syncModal()
  }
  else if(a.kind==="speak"&&state.phase==="question"){
@@ -278,6 +279,8 @@ function finishRound(success){
  sync();closeCard();checkEnd();
 }
 function selectCell(i){if(!roomReady||state.phase!=="idle"||state.turn!==myPlayer||state.lands[i])return;sendAction({kind:"select",index:i,turn:myPlayer})}
+function changeTurn(){if(!roomReady||state.phase!=="idle")return;const n=prompt("몇 번 친구의 차례로 바꿀까요? (1~4)");const p=Number(n);if(Number.isInteger(p)&&p>=1&&p<=4)sendAction({kind:"changeTurn",turn:p})}
+$("changeTurnBtn").onclick=changeTurn;
 function openCard(){
  const c=cards[state.selected];$("category").textContent=c.cat;$("cardTitle").textContent=(state.selected+1)+". "+c.title;$("scene").textContent="📌 "+c.scene;$("friend").textContent=c.friend;$("question").textContent="❓ "+c.q;$("result").classList.toggle("show",state.phase==="result");$("claimArea").style.display="none";$("failArea").style.display="none";$("speakBtn").style.display=state.phase==="question"?"inline-block":"none";const active=state.players[state.turn];$("activePlayer").textContent=active?"⭐ 지금 "+active.num+"번 친구가 도전 중!":"⭐ 친구가 도전 중!";$("modal").classList.add("show");if(state.phase==="question")startTimer();
 }
